@@ -13,9 +13,9 @@
 <body>
     <header class= "header">
         <h1>{{title}}</h1>
-            <select v-model="selected" @change.prevent="onChange">
+            <select v-model="selected" @change="onChange">
                     <option value = "" selected="false" disabled="disabled">Filter by source</option>    
-                    <option v-for="source in sources"> {{source.id}} </option>
+                    <option v-for="source in sources"> {{source.name}} </option>
             </select>
     </header>
     
@@ -57,7 +57,19 @@
                 console.log(json)
             }, 
             onChange() {
-                this.fetchFromSource(this.selected)
+                // this.fetchFromSource(this.selected)
+                this.findSource(this.selected)
+            },
+            async findSource(sourceName) {
+                const res = await fetch(`https://newsapi.org/v2/sources?apiKey=4c48e10ab72d4baa8feff20c49cac921`)
+                const json = await res.json()
+                const sources = json.sources
+                const sourceId = sources.filter(function(news, index, array) {
+                    if(array[index].name == sourceName) {
+                        return array[index].id
+                    }
+                })
+                this.fetchFromSource(sourceId[0].id)
             }
         }
     })
