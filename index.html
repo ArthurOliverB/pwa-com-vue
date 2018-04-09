@@ -12,13 +12,13 @@
     <!--  -->
 </head>
 <body>
-    <header class= "header">
+    <nav class= "header">
         <h1>{{title}}</h1>
             <select v-model="selected" @change="onChange">
                     <option value = "" selected="false" disabled="disabled">Filter by source</option>    
                     <option v-for="source in sources"> {{source.name}} </option>
             </select>
-    </header>
+        </nav>
     
     <main id= "content">
         <div class= "grid" v-for= 'article in news'>
@@ -33,59 +33,73 @@
 <!-- Vue -->
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script>
-    window.addEventListener('load', data => {
-        content.fetchNews()
-        header.fetchSources()
-    })
 
-    const header = new Vue({
-        el: '.header',
-        data: {
-            title: "News",
-            selected: "",
-            sources: []
-        }, 
-        methods: {
-            async fetchSources(){
-                const res = await fetch(`https://newsapi.org/v2/sources?apiKey=4c48e10ab72d4baa8feff20c49cac921`)
-                const json = await res.json()
-                this.sources = json.sources
-            },
-            async fetchFromSource(source){
-                const res = await fetch(`https://newsapi.org/v2/top-headlines?sources=${source}&apiKey=4c48e10ab72d4baa8feff20c49cac921`)
-                const json = await res.json()
-                content.news = json.articles
-                console.log(json)
-            }, 
-            onChange() {
-                // this.fetchFromSource(this.selected)
-                this.findSource(this.selected)
-            },
-            async findSource(sourceName) {
-                const res = await fetch(`https://newsapi.org/v2/sources?apiKey=4c48e10ab72d4baa8feff20c49cac921`)
-                const json = await res.json()
-                const sources = json.sources
-                const sourceId = sources.filter(function(news, index, array) {
-                    if(array[index].name == sourceName) {
-                        return array[index].id
-                    }
-                })
-                this.fetchFromSource(sourceId[0].id)
-            }
-        }
-    })
-    const content = new Vue({
-        el: '#content',
-        data: {
-            news: [],
+
+window.addEventListener('load', data => {
+    content.fetchNews()
+    header.fetchSources()
+
+    if('serviceWorker' in navigator) {
+    try{
+        navigator.serviceWorker.register('sw.js')
+        console.log("Service worker registered!")
+    } catch(err) {
+        console.log(err)
+    }
+}
+})
+
+const header = new Vue({
+    el: '.header',
+    data: {
+        title: "News",
+        selected: "",
+        sources: []
+    }, 
+    methods: {
+        async fetchSources(){
+            const res = await fetch(`https://newsapi.org/v2/sources?apiKey=4c48e10ab72d4baa8feff20c49cac921`)
+            const json = await res.json()
+            this.sources = json.sources
         },
-        methods: {
-            async fetchNews() {
-                const res = await fetch(`https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=4c48e10ab72d4baa8feff20c49cac921`)
-                const json = await res.json()
-                this.news = json.articles
-            }
+        async fetchFromSource(source){
+            const res = await fetch(`https://newsapi.org/v2/top-headlines?sources=${source}&apiKey=4c48e10ab72d4baa8feff20c49cac921`)
+            console.log("ERRO!")
+            const json = await res.json()
+            console.log("ERRO!")
+            content.news = json.articles
+        }, 
+        onChange() {
+            // this.fetchFromSource(this.selected)
+            this.findSource(this.selected)
+        },
+        async findSource(sourceName) {
+            const res = await fetch(`https://newsapi.org/v2/sources?apiKey=4c48e10ab72d4baa8feff20c49cac921`)
+            const json = await res.json()
+            const sources = json.sources
+            
+            const sourceId = sources.filter(function(news, index, array) {
+                if(array[index].name == sourceName) {
+                    return array[index].id
+                }
+            })
+            console.log("ERRO!")
+            this.fetchFromSource(sourceId[0].id)
         }
-    })
+    }
+})
+const content = new Vue({
+    el: '#content',
+    data: {
+        news: [],
+    },
+    methods: {
+        async fetchNews() {
+            const res = await fetch(`https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=4c48e10ab72d4baa8feff20c49cac921`)
+            const json = await res.json()
+            this.news = json.articles
+        }
+    }
+})
 </script>
 </html>

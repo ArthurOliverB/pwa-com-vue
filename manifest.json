@@ -3,7 +3,7 @@
   "short_name": "VueNews",
   "theme_color": "#56bd85",
   "background_color": "#ffffff",
-  "display": "standalone",
+  "display": "fullscreen",
   "orientation": "portrait",
   "start_url": ".",
   "icons": [

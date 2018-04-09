@@ -6,6 +6,7 @@ window.addEventListener('load', data => {
     updateNews()
 })
 
+
 async function updateNews(){
     const res = await fetch(`https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=${APIKEY}`)
     const json = await res.json()
