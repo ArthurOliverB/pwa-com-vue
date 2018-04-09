@@ -1,8 +1,8 @@
 const staticAssets = [
     './',
     './main.css',
-    './fallback.json',
-    './images/fetch-dog.jpeg'
+    './assets/fallback.json',
+    './assets/images/fetch-dog.jpeg'
 ]
 self.addEventListener('install', async event => {
     const cache = await caches.open('news-static')
@@ -36,6 +36,6 @@ async function networkFirt(req) {
     } catch(err) {
         const cachedResponse =  await cache.match(req)
         console.log(cachedResponse)
-        return cachedResponse || await caches.match('./fallback.json')
+        return cachedResponse || await caches.match('./assets/fallback.json')
     }
 }
